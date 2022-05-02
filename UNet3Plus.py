@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class UNet3Plus(nn.Module):
     def __init__(self, in_channels=3, out_channels=11):
@@ -80,7 +79,7 @@ class UNet3Plus(nn.Module):
         self.d4_e4_bn = nn.BatchNorm2d(64)
         self.d4_e4_relu = nn.ReLU(inplace=True)  
         # e5 -> d4
-        self.d4_e5_upsample = nn.Upsample(scale_factor=2, mode='bilinear')
+        self.d4_e5_upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False)
         self.d4_e5_conv = nn.Conv2d(1024, 64, kernel_size=3, stride=1, padding=1)
         self.d4_e5_bn = nn.BatchNorm2d(64)
         self.d4_e5_relu = nn.ReLU(inplace=True)  
@@ -105,12 +104,12 @@ class UNet3Plus(nn.Module):
         self.d3_e3_bn = nn.BatchNorm2d(64)
         self.d3_e3_relu = nn.ReLU(inplace=True)  
         # d4 -> d3
-        self.d3_d4_upsample = nn.Upsample(scale_factor=2, mode='bilinear')
+        self.d3_d4_upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False)
         self.d3_d4_conv = nn.Conv2d(320, 64, kernel_size=3, stride=1, padding=1)
         self.d3_d4_bn = nn.BatchNorm2d(64)
         self.d3_d4_relu = nn.ReLU(inplace=True)  
         # e5 -> d3
-        self.d3_e5_upsample = nn.Upsample(scale_factor=4, mode='bilinear')
+        self.d3_e5_upsample = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
         self.d3_e5_conv = nn.Conv2d(1024, 64, kernel_size=3, stride=1, padding=1)
         self.d3_e5_bn = nn.BatchNorm2d(64)
         self.d3_e5_relu = nn.ReLU(inplace=True)  
@@ -130,17 +129,17 @@ class UNet3Plus(nn.Module):
         self.d2_e2_bn = nn.BatchNorm2d(64)
         self.d2_e2_relu = nn.ReLU(inplace=True)  
         # d3 -> d2
-        self.d2_d3_upsample = nn.Upsample(scale_factor=2, mode='bilinear')
+        self.d2_d3_upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False)
         self.d2_d3_conv = nn.Conv2d(320, 64, kernel_size=3, stride=1, padding=1)
         self.d2_d3_bn = nn.BatchNorm2d(64)
         self.d2_d3_relu = nn.ReLU(inplace=True) 
         # d4 -> d2
-        self.d2_d4_upsample = nn.Upsample(scale_factor=4, mode='bilinear')
+        self.d2_d4_upsample = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
         self.d2_d4_conv = nn.Conv2d(320, 64, kernel_size=3, stride=1, padding=1)
         self.d2_d4_bn = nn.BatchNorm2d(64)
         self.d2_d4_relu = nn.ReLU(inplace=True) 
         # e5 -> d2
-        self.d2_e5_upsample = nn.Upsample(scale_factor=8, mode='bilinear')
+        self.d2_e5_upsample = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=False)
         self.d2_e5_conv = nn.Conv2d(1024, 64, kernel_size=3, stride=1, padding=1)
         self.d2_e5_bn = nn.BatchNorm2d(64)
         self.d2_e5_relu = nn.ReLU(inplace=True) 
@@ -155,22 +154,22 @@ class UNet3Plus(nn.Module):
         self.d1_e1_bn = nn.BatchNorm2d(64)
         self.d1_e1_relu = nn.ReLU(inplace=True) 
         # d2 -> d1
-        self.d1_d2_upsample = nn.Upsample(scale_factor=2, mode='bilinear')
+        self.d1_d2_upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False)
         self.d1_d2_conv = nn.Conv2d(320, 64, kernel_size=3, stride=1, padding=1)
         self.d1_d2_bn = nn.BatchNorm2d(64)
         self.d1_d2_relu = nn.ReLU(inplace=True) 
         # d3 -> d1
-        self.d1_d3_upsample = nn.Upsample(scale_factor=4, mode='bilinear')
+        self.d1_d3_upsample = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
         self.d1_d3_conv = nn.Conv2d(320, 64, kernel_size=3, stride=1, padding=1)
         self.d1_d3_bn = nn.BatchNorm2d(64)
         self.d1_d3_relu = nn.ReLU(inplace=True) 
         # d4 -> d1
-        self.d1_d4_upsample = nn.Upsample(scale_factor=8, mode='bilinear')
+        self.d1_d4_upsample = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=False)
         self.d1_d4_conv = nn.Conv2d(320, 64, kernel_size=3, stride=1, padding=1)
         self.d1_d4_bn = nn.BatchNorm2d(64)
         self.d1_d4_relu = nn.ReLU(inplace=True) 
         # e5 -> d1
-        self.d1_e5_upsample = nn.Upsample(scale_factor=16, mode='bilinear')
+        self.d1_e5_upsample = nn.Upsample(scale_factor=16, mode='bilinear', align_corners=False)
         self.d1_e5_conv = nn.Conv2d(1024, 64, kernel_size=3, stride=1, padding=1)
         self.d1_e5_bn = nn.BatchNorm2d(64)
         self.d1_e5_relu = nn.ReLU(inplace=True) 
@@ -226,4 +225,4 @@ class UNet3Plus(nn.Module):
         
         output = self.output(d1)
         
-        return F.sigmoid(output)
+        return torch.sigmoid(output)
