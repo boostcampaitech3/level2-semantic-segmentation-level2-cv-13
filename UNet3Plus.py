@@ -9,6 +9,19 @@ class UNet3Plus(nn.Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
         
+        """
+        https://arxiv.org/pdf/2004.08790.pdf
+        논문의 그림을 봐야 이해가 빠릅니다. (Fig. 1)
+        encoder node 5개 (e1-e5), decoder node 4개 (d4-d1)로 이루어져 있습니다.
+        encoder node의 생성은 UNet의 방식과 같습니다 - 이전의 encoder node가 다음 encoder node를 생성합니다.
+        하지만 각각의 decoder node들은 총 5개의 node들을 concat해 생성됩니다.
+        총 5개의 '레이어'가 있고, 각각의 레이어에서 encoder node를 가져오되, 
+        해당 레이어에 이미 생성된 decoder node가 존재한다면 encoder node 대신에 decoder node를 사용하는 방식입니다. 
+        생성할 decoder node와 같은 레이어에 있는 encoder node를 제외하면 모두 height, width가 다르기 때문에,
+        nn.MaxPool2d()와 nn.Upsample()을 이용해 height, width를 맞춰줍니다.
+        5개의 node들의 channel도 64로 변경해줍니다. 
+        64*5=340인 channel을 64로 줄여주면 decoder node가 생성됩니다.
+        """
         
         # Encoder
         
