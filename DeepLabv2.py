@@ -19,7 +19,7 @@ class Bottleneck(nn.Module):
                                   conv_block(out_ch//4, out_ch//4, 3, stride ,dilation, dilation),
                                   conv_block(out_ch//4,out_ch,1,1,0,False))
         self.downsample = nn.Sequential(
-            conv_block(in_ch, out_ch, 1, stride, 0, 1, False)) if downsample else None
+            conv_block(in_ch, out_ch, 1, stride, 0, 1, relu = False)) if downsample else None
         
         self.relu = nn.ReLU(inplace = True)
     
